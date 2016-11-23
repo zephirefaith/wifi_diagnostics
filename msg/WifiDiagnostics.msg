@@ -1,4 +1,4 @@
 std_msgs/Header header
 geometry_msgs/Point position
-std_msgs/int8 signal
-std_msgs/int8 qualityby70
+std_msgs/Int8 signal
+std_msgs/Int8 qualityby70
