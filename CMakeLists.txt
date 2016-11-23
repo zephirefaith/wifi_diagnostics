@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   rospy
   std_msgs
+  geometry_msgs
   tf
 )
 
@@ -47,7 +48,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   wifi_diagnostic.msg
+   WifiDiagnostics.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -68,6 +69,7 @@ find_package(catkin REQUIRED COMPONENTS
  generate_messages(
    DEPENDENCIES
    std_msgs
+   geometry_msgs
  )
 
 ################################################
@@ -102,7 +104,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES wifi_diagnostics
-  CATKIN_DEPENDS message_runtime rospy std_msgs tf
+  CATKIN_DEPENDS message_runtime rospy std_msgs tf geometry_msgs
 #  DEPENDS system_lib
 )
 
