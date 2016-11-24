@@ -27,8 +27,11 @@ class WifiDiagnosticLogger(object):
         self.listener.waitForTransform(map_frame, robot_frame, now, rospy.Duration(.15))
         return self.listener.lookupTransform(map_frame, robot_frame, now)
 
-    def collect_wifi_data(self):
-        '''collects the robot pose and wifi signal strength + quality'''
+    def log_wifi_data(self):
+        '''collects the robot pose and wifi signal strength + quality and publishes it'''
+        wifi_msg = WifiDiagnostics()
+        wifi_msg.header.stamp = rospy.get_rostime()
+        wifi_msg.header.frame_id = '/map'
         try:
             (trans, rot) = self.get_robot_pose()
             self.robot_pose = (trans, rot)
@@ -36,26 +39,23 @@ class WifiDiagnosticLogger(object):
             if self.robot_pose is None:
                 return
             (trans, rot) = self.robot_pose
-        cell = Cell.where('wlan0', self.ssid_filter)[0]
-        wifi_msg = WifiDiagnostics()
-        wifi_msg.header.stamp = rospy.get_rostime()
-        wifi_msg.header.frame_id = '/map'
         wifi_msg.position.x = trans[0]
         wifi_msg.position.y = trans[1]
-        wifi_msg.signal.data = cell.signal
-        temp = cell.quality.encode("utf8")
-        wifi_msg.qualityby70.data = int(temp.split('/')[0])
-        return wifi_msg
-
-    def log_diagnostics(self):
-        '''publishes the wifi diagnostic message'''
-        wifi_msg = self.collect_wifi_data()
+        try:
+            cell = Cell.where('wlan0', self.ssid_filter)[0]
+        except IndexError:
+            wifi_msg.signal.data = 0
+            wifi_msg.qualityby70.data = 0
+        else:
+            wifi_msg.signal.data = cell.signal
+            temp = cell.quality.encode("utf8")
+            wifi_msg.qualityby70.data = int(temp.split('/')[0])
         self.pub.publish(wifi_msg)
 
-    if __name__ == '__main__':
-        node_rate = rospy.Rate(10)
-        wifi_object = WifiDiagnosticLogger()
-        while not rospy.is_shutdown():
-            wifi_object.log_diagnostics()
-            node_rate.sleep()
-        rospy.spin()
+if __name__ == '__main__':
+    wifi_object = WifiDiagnosticLogger()
+    node_rate = rospy.Rate(5)
+    while not rospy.is_shutdown():
+        wifi_object.log_wifi_data()
+        node_rate.sleep()
+    rospy.spin()
