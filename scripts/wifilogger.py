@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+#TODO Add a status field to the wifi msg
 from wifi import Cell
 import rospy
 import tf
