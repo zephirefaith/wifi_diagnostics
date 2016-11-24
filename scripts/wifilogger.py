@@ -10,7 +10,7 @@ class WifiDiagnosticLogger(object):
     quality along with the location of the robot_frame'''
     def __init__(self):
         rospy.init_node('wifi_diagnostic_logger')
-        self.listener = tf.TranformListener()
+        self.listener = tf.TransformListener()
         self.pub = rospy.Publisher('/wifi_diagnostics', WifiDiagnostics, queue_size=10)
         self.robot_pose = None
 
